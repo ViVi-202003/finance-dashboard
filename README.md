@@ -20,8 +20,8 @@ docker-compose up
 
 Then visit [http://localhost:3000](http://localhost:3000). You will find a Grafana dashboard with some example data.
 
-[!TIP]
-The default login is `admin`/`admin`. You can change the password in the Grafana settings.
+> [!TIP]
+> The default login is `admin`/`admin`. You can change the password in the Grafana settings.
 
 ## Loading in your own data
 
