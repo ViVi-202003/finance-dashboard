@@ -37,12 +37,12 @@ Now you need two things:
 
 For a real-world example, see the ING DE CSV importer in `plugins/ing_de_csv_importer`. This plugin uses the CSV data that can be exported on the ING banking dashboard.
 
-When you have your plugin(s), set the environment variables `IMPORTER_PLUGIN` and `CLASSIFIER_PLUGIN` to the Python path of the plugin. Then start the deployment:
+When you have your plugin(s), set the environment variables `IMPORTER_PLUGIN` and `CLASSIFIER_PLUGIN` to the Python path of the plugin. Then start the deployment. Use the `--build` flag to rebuild the plugins if you made changes.
 
 ```bash
 export IMPORTER_PLUGIN="plugins.example_importer.importer"
 export CLASSIFIER_PLUGIN="plugins.example_classifier.classifier"
-docker-compose up
+docker-compose up --build
 ```
 
 ## License
