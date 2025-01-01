@@ -32,7 +32,7 @@ docker-compose down -v
 ```
 
 Now you need two things: 
-- A banking data importer plugin: see the example importer in `plugins/example_importer``
+- A banking data importer plugin: see the example importer in `plugins/example_importer`
 - A classifier plugin: see the example classifier in `plugins/example_classifier`
 
 For a real-world example, see the ING DE CSV importer in `plugins/ing_de_csv_importer`. This plugin uses the CSV data that can be exported on the ING banking dashboard.
