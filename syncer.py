@@ -43,15 +43,18 @@ print(f"Successfully imported plugin: {IMPORTER_PLUGIN}")
 # Create tables if they don't exist.
 with psycopg2.connect(**POSTGRES_CONF) as connection, connection.cursor() as cursor:
     cursor.execute("""CREATE TABLE IF NOT EXISTS transactions (
+        iban TEXT NOT NULL,
+        internal BOOLEAN DEFAULT FALSE,
         date DATE NOT NULL,
         client TEXT NOT NULL,
         kind TEXT NOT NULL,
         purpose TEXT NOT NULL,
         amount DECIMAL NOT NULL,
+        balance DECIMAL NOT NULL,
         currency TEXT NOT NULL,
         primary_class TEXT,
         secondary_class TEXT,
-        PRIMARY KEY (date, client, kind, purpose, amount, currency)
+        PRIMARY KEY (iban, internal, date, client, kind, purpose, amount, balance, currency)
     )""")
 
 # Insert transactions into the database.
@@ -59,16 +62,19 @@ with psycopg2.connect(**POSTGRES_CONF) as connection, connection.cursor() as cur
     for i, transaction in enumerate(importer.fetch_transactions()):
         primary_class, secondary_class = classifier.classify_transaction(transaction)
         cursor.execute("""
-            INSERT INTO transactions (date, client, kind, purpose, amount, currency, primary_class, secondary_class)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            ON CONFLICT (date, client, kind, purpose, amount, currency)
+            INSERT INTO transactions (iban, internal, date, client, kind, purpose, amount, balance, currency, primary_class, secondary_class)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ON CONFLICT (iban, internal, date, client, kind, purpose, amount, balance, currency)
             DO NOTHING
         """, (
+            transaction['iban'],
+            transaction['internal'], # Whether the transaction is between our own accounts
             transaction['date'],
             transaction['client'],
             transaction['kind'],
             transaction['purpose'],
             transaction['amount'],
+            transaction['balance'],
             transaction['currency'],
             primary_class or 'Not classified',
             secondary_class or 'Not classified',

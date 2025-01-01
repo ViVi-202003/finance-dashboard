@@ -53,6 +53,7 @@ def fetch_transactions():
         df['client'] = df['Auftraggeber/Empfänger'].fillna('Unknown').astype(str)
         # Parse betrag as float -> format: 1.234,56 or -1.234,56
         df['amount'] = df['Betrag'].str.replace('.', '').str.replace(',', '.').astype(float)
+        df['balance'] = df['Saldo'].str.replace('.', '').str.replace(',', '.').astype(float)
         # Used for deduplication (amount is negative on one of both accounts
         df['amount_abs'] = df['amount'].abs()
         # Buchung has format 14.10.2024, german
@@ -64,7 +65,8 @@ def fetch_transactions():
         df['currency'] = df['Währung.1'].astype(str)
         dfs.append(df)
 
-    # Deduplicate transactions between accounts and print out which transactions were dropped.
-    deduped = pd.concat(dfs).drop_duplicates(subset=['date', 'amount_abs'], keep=False)
-    deduped = deduped.sort_values(by='date', ascending=False)
-    return deduped.to_dict(orient='records')
+    # Mark transactions seen on both accounts as internal in the column 'internal'
+    # These aren't any expenses or income.
+    df = pd.concat(dfs)
+    df['internal'] = df.duplicated(subset=['date', 'amount_abs'], keep=False)
+    return df.to_dict(orient='records')
