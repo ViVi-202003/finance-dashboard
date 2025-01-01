@@ -1,0 +1,10 @@
+# Protecting your plugins from being committed to the repository
+*
+!.gitignore
+# Allow the default plugins to be committed
+!ing_csv_de_importer/
+!ing_csv_de_importer/**
+!example_importer/
+!example_importer/**
+!example_classifier/
+!example_classifier/**

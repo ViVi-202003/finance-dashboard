@@ -1,0 +1,2 @@
+# For fast and easy csv data processing.
+pandas==2.2.3

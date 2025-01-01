@@ -1,0 +1,24 @@
+services:
+  grafana:
+    build: grafana
+    ports:
+      - "3000:3000"
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  syncer:
+    build: .
+    environment:
+      POSTGRES_PASSWORD: secret
+      # Plugin conf
+      IMPORTER_PLUGIN: ${IMPORTER_PLUGIN:-plugins.example_importer.importer}
+      CLASSIFIER_PLUGIN: ${CLASSIFIER_PLUGIN:-plugins.example_classifier.classifier}
+    restart: on-failure
+
+volumes:
+  postgres_data:
