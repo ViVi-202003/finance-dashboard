@@ -4,10 +4,11 @@ Tool to analyze income and expenses, similar to apps like Finanzguru.
 
 ![Screenshot](screenshot.png)
 
-Has three parts:
+Has four parts:
 - Grafana dashboard that shows the data
 - Postgres database as data source for Grafana
 - Syncer script that imports data from a bank account
+- Patcher service that is accessed by links in Grafana to update transactions if needed
 
 Currently the following banks are supported:
 - ING (DE)
@@ -31,19 +32,28 @@ Make sure to have a fresh database. It's easiest to remove the complete deployme
 docker-compose down -v
 ```
 
-Now you need two things: 
+Now you need two things:
 - A banking data importer plugin: see the example importer in `plugins/example_importer`
 - A classifier plugin: see the example classifier in `plugins/example_classifier`
 
-For a real-world example, see the ING DE CSV importer in `plugins/ing_de_csv_importer`. This plugin uses the CSV data that can be exported on the ING banking dashboard.
+For a real-world example, see the ING DE CSV importer in `plugins/ing_de_csv_importer`. This plugin uses the CSV data that can be exported on the ING banking dashboard. You can also provide transactions by hand through the JSON importer plugin in `plugins/json_importer`, or adapt this plugin to fit your needs.
 
-When you have your plugin(s), set the environment variables `IMPORTER_PLUGIN` and `CLASSIFIER_PLUGIN` to the Python path of the plugin. Then start the deployment. Use the `--build` flag to rebuild the plugins if you made changes.
+> [!TIP]
+> You can provide an `additional-requirements.txt` in the plugins directory to install additional dependencies that your plugin may need.
+
+When you have your plugin(s), set the environment variables `IMPORTER_PLUGINS` and `CLASSIFIER_PLUGIN` to the Python path of the plugin. Then start the deployment. Use the `--build` flag to rebuild the plugins if you made changes.
 
 ```bash
-export IMPORTER_PLUGIN="plugins.example_importer.importer"
+export IMPORTER_PLUGINS="plugins.example_importer.importer,plugins.json_importer.importer"
 export CLASSIFIER_PLUGIN="plugins.example_classifier.classifier"
 docker-compose up --build
 ```
+
+## Patching transactions
+
+Sometimes transactions may not be marked correctly as `internal` (transaction between own accounts). This happens when the transaction goes to an account that is yours but not imported.
+
+For this case you can click the `Income (Set as Internal Transfer)` or `Expense (Set as Internal Transfer)` links in the Grafana dashboard. This will call the patcher service to update the transaction. This will then create a patch json file in `patcher/patches/`. If you've reset the database, you can reapply these manual changes in Grafana. You'll find a `Click here to apply patched transactions` link in the dashboard.
 
 ## License
 

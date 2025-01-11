@@ -8,3 +8,5 @@
 !example_importer/**
 !example_classifier/
 !example_classifier/**
+!json_importer/
+!json_importer/**

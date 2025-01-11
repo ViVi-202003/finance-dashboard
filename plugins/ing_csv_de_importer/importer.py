@@ -1,11 +1,11 @@
 """
 ING DE banking importer.
 
-The importer reads all csv files in input/*.csv. These should be exported 
+The importer reads all csv files in input/*.csv. These should be exported
 from the ING DE banking website. The csv files are expected to contain a specific
 header that contains meta information about the account. We will use this information
 to distinguish between different accounts, allowing to dump any number of accounts
-into the same input folder. Transactions between the given accounts will be dropped, 
+into the same input folder. Transactions between the given accounts will be dropped,
 otherwise they will appear as income or expenses in the dashboard. This allows to
 analyze the spending behavior of a single person, even if they have multiple accounts.
 
@@ -49,13 +49,11 @@ def fetch_transactions():
         print(f"Reading file {file}")
         df = pd.read_csv(file, sep=';', encoding='latin1', skiprows=12)
         df['iban'] = parse_header(file) # Only need IBAN for deduplication
-        # Fill NaNs in Auftraggeber/Empfaenger with "Unbekannt" 
+        # Fill NaNs in Auftraggeber/Empfaenger with "Unbekannt"
         df['client'] = df['Auftraggeber/Empfänger'].fillna('Unknown').astype(str)
         # Parse betrag as float -> format: 1.234,56 or -1.234,56
         df['amount'] = df['Betrag'].str.replace('.', '').str.replace(',', '.').astype(float)
         df['balance'] = df['Saldo'].str.replace('.', '').str.replace(',', '.').astype(float)
-        # Used for deduplication (amount is negative on one of both accounts
-        df['amount_abs'] = df['amount'].abs()
         # Buchung has format 14.10.2024, german
         df['date'] = pd.to_datetime(df['Buchung'], format='%d.%m.%Y')
         # Convert back to string for database insertion
@@ -63,10 +61,8 @@ def fetch_transactions():
         df['kind'] = df['Buchungstext'].astype(str) # e.g. "Lastschrift", "Gutschrift"
         df['purpose'] = df['Verwendungszweck'].astype(str)
         df['currency'] = df['Währung.1'].astype(str)
+        # If we have "Wertpapiergutschrift" or "Wertpapierkauf" in the purpose,
+        # it's an internal transaction to/from the ING depot account.
+        df['internal'] = df['kind'].str.contains("Wertpapiergutschrift|Wertpapierkauf")
         dfs.append(df)
-
-    # Mark transactions seen on both accounts as internal in the column 'internal'
-    # These aren't any expenses or income.
-    df = pd.concat(dfs)
-    df['internal'] = df.duplicated(subset=['date', 'amount_abs'], keep=False)
-    return df.to_dict(orient='records')
+    return pd.concat(dfs).to_dict(orient='records')

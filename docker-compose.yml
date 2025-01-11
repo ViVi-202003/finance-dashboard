@@ -4,19 +4,37 @@ services:
     ports:
       - "3000:3000"
 
+  # Use the following command to debug this database:
+  # docker-compose exec postgres psql -U postgres
   postgres:
     image: postgres
     environment:
       POSTGRES_PASSWORD: secret
+    # Log all queries to the console.
+    command: postgres -c log_statement=all
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  # Service that can be used to patch transactions in the DB.
+  # E.g. when a transaction should be excluded from income/expense.
+  patcher:
+    build: patcher
+    ports:
+      - "3001:3001"
+    environment:
+      POSTGRES_PASSWORD: secret
+    volumes:
+      # Manual patches are backed up in this volume and can be replayed
+      # from the Grafana dashboard.
+      - ./patcher/patches:/app/patches
+
+  # Script that loads transactions into the database.
   syncer:
     build: .
     environment:
       POSTGRES_PASSWORD: secret
       # Plugin conf
-      IMPORTER_PLUGIN: ${IMPORTER_PLUGIN:-plugins.example_importer.importer}
+      IMPORTER_PLUGINS: ${IMPORTER_PLUGINS:-plugins.example_importer.importer,plugins.json_importer.importer}
       CLASSIFIER_PLUGIN: ${CLASSIFIER_PLUGIN:-plugins.example_classifier.classifier}
     restart: on-failure
 

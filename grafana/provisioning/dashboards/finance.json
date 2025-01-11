@@ -22,130 +22,29 @@
   "links": [],
   "panels": [
     {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "P44368ADAD746BC27"
-      },
       "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic-by-name"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "currencyEUR"
-        },
+        "defaults": {},
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 9,
         "w": 12,
         "x": 0,
         "y": 0
       },
-      "id": 1,
+      "id": 12,
       "options": {
-        "barRadius": 0.05,
-        "barWidth": 0.88,
-        "fullHighlight": false,
-        "groupWidth": 0.97,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
         },
-        "orientation": "vertical",
-        "showValue": "always",
-        "stacking": "none",
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        },
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 100
+        "content": "# Finance dashboard\n\nIf some of the transactions listed below are not classified correctly, you can click on the links in the table to change the classification.\nCurrently this is only supported for the `internal` field of the transaction.\nIf you redeploy the app and don't see your previous changes, you can replay the patches you made:\n\n[Click here to apply patched transactions](http://localhost:3001/apply-patches)",
+        "mode": "markdown"
       },
       "pluginVersion": "11.3.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "P44368ADAD746BC27"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT\n    DATE_TRUNC('${granularity}', date) AS period,\n    SUM(CASE WHEN amount > 0 THEN amount ELSE 0 END) AS Income,\n    -SUM(CASE WHEN amount < 0 THEN amount ELSE 0 END) AS Expenses\nFROM \n    transactions\nWHERE \n    date BETWEEN $__timeFrom() AND $__timeTo()\n    AND internal = false\nGROUP BY \n    DATE_TRUNC('${granularity}', date)\nORDER BY \n    period;",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [
-                  {
-                    "name": "amount",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "date",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          },
-          "table": "transactions"
-        }
-      ],
-      "title": "Income / Expenses",
-      "type": "barchart"
+      "title": "",
+      "type": "text"
     },
     {
       "datasource": {
@@ -289,14 +188,14 @@
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
-            "fillOpacity": 88,
+            "fillOpacity": 80,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
-            "lineWidth": 2,
+            "lineWidth": 1,
             "scaleDistribution": {
               "type": "linear"
             },
@@ -304,8 +203,6 @@
               "mode": "off"
             }
           },
-          "decimals": 1,
-          "fieldMinMax": false,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -313,55 +210,44 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           },
           "unit": "currencyEUR"
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byType",
-              "options": "string"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "dateTimeAsIso"
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
-        "h": 12,
+        "h": 11,
         "w": 12,
         "x": 0,
-        "y": 8
+        "y": 9
       },
-      "id": 6,
+      "id": 1,
       "options": {
-        "barRadius": 0,
+        "barRadius": 0.05,
         "barWidth": 0.88,
         "fullHighlight": false,
-        "groupWidth": 0.7,
+        "groupWidth": 0.97,
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "right",
+          "placement": "bottom",
           "showLegend": true
         },
-        "orientation": "auto",
-        "showValue": "never",
-        "stacking": "normal",
-        "text": {},
+        "orientation": "vertical",
+        "showValue": "always",
+        "stacking": "none",
         "tooltip": {
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
         },
-        "xField": "month\\primary_class",
         "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 200
+        "xTickLabelSpacing": 100
       },
       "pluginVersion": "11.3.0",
       "targets": [
@@ -373,7 +259,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \n    DATE_TRUNC('${granularity}', date) AS period,\n    primary_class,\n    ABS(SUM(CASE WHEN amount < 0 THEN amount ELSE 0 END)) AS Expense\nFROM \n    transactions\nWHERE \n    date BETWEEN $__timeFrom() AND $__timeTo() AND not internal\nGROUP BY \n    DATE_TRUNC('${granularity}', date), primary_class\nORDER BY \n    period, Expense;",
+          "rawSql": "SELECT\n    DATE_TRUNC('${granularity}', date) AS period,\n    SUM(CASE WHEN amount > 0 THEN amount ELSE 0 END) AS Income,\n    -SUM(CASE WHEN amount < 0 THEN amount ELSE 0 END) AS Expenses\nFROM \n    transactions\nWHERE \n    date BETWEEN $__timeFrom() AND $__timeTo()\n    AND internal = false\nGROUP BY \n    DATE_TRUNC('${granularity}', date)\nORDER BY \n    period;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -409,18 +295,7 @@
           "table": "transactions"
         }
       ],
-      "title": "Expenses: Primary Class",
-      "transformations": [
-        {
-          "id": "groupingToMatrix",
-          "options": {
-            "columnField": "primary_class",
-            "emptyValue": "null",
-            "rowField": "period",
-            "valueField": "expense"
-          }
-        }
-      ],
+      "title": "Income / Expenses",
       "type": "barchart"
     },
     {
@@ -657,6 +532,156 @@
         "x": 0,
         "y": 20
       },
+      "id": 6,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.88,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "never",
+        "stacking": "normal",
+        "text": {},
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xField": "month\\primary_class",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 200
+      },
+      "pluginVersion": "11.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "P44368ADAD746BC27"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \n    DATE_TRUNC('${granularity}', date) AS period,\n    primary_class,\n    ABS(SUM(CASE WHEN amount < 0 THEN amount ELSE 0 END)) AS Expense\nFROM \n    transactions\nWHERE \n    date BETWEEN $__timeFrom() AND $__timeTo() AND not internal\nGROUP BY \n    DATE_TRUNC('${granularity}', date), primary_class\nORDER BY \n    period, Expense;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "amount",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "date",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "transactions"
+        }
+      ],
+      "title": "Expenses: Primary Class",
+      "transformations": [
+        {
+          "id": "groupingToMatrix",
+          "options": {
+            "columnField": "primary_class",
+            "emptyValue": "null",
+            "rowField": "period",
+            "valueField": "expense"
+          }
+        }
+      ],
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "P44368ADAD746BC27"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic-by-name"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 88,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 2,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 1,
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "currencyEUR"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byType",
+              "options": "string"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeAsIso"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 12,
+        "x": 12,
+        "y": 20
+      },
       "id": 9,
       "options": {
         "barRadius": 0,
@@ -749,14 +774,13 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-RdYlGr"
+            "mode": "thresholds"
           },
           "custom": {
             "align": "auto",
             "cellOptions": {
-              "type": "color-text"
+              "type": "auto"
             },
-            "filterable": true,
             "inspect": false
           },
           "mappings": [],
@@ -770,15 +794,124 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "internal"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "",
+                    "url": "http://localhost:3001/transactions/internal/toggle?hash=${__data.fields[\"hash\"]}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "hash"
+            },
+            "properties": [
+              {
+                "id": "custom.hidden",
+                "value": true
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "amount"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text",
+                  "wrapText": false
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 62
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "date"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "client"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 249
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "currency"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 38
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "kind"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 84
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "purpose"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 307
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 12,
-        "w": 12,
-        "x": 12,
-        "y": 20
+        "h": 16,
+        "w": 24,
+        "x": 0,
+        "y": 32
       },
-      "id": 11,
+      "id": 13,
       "options": {
         "cellHeight": "sm",
         "footer": {
@@ -790,7 +923,8 @@
           ],
           "show": false
         },
-        "showHeader": true
+        "showHeader": true,
+        "sortBy": []
       },
       "pluginVersion": "11.3.0",
       "targets": [
@@ -798,7 +932,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n  date,\n  client,\n  kind,\n  purpose,\n  amount,\n  currency\nFROM\n  transactions\nWHERE\n  date BETWEEN $__timeFrom()\n  AND $__timeTo()\n  AND internal = false\nORDER BY\n  date DESC;",
+          "rawSql": "SELECT\n  hash,\n  date,\n  kind,\n  client,\n  purpose,\n  amount,\n  currency,\n  CASE\n    WHEN internal AND amount < 0 THEN 'Internal Transfer (Set as Expense)'\n    WHEN internal AND amount >= 0 THEN 'Internal Transfer (Set as Income)'\n    WHEN NOT internal AND amount < 0 THEN 'Expense (Set as Internal Transfer)'\n    WHEN NOT internal AND amount >= 0 THEN 'Income (Set as Internal Transfer)'\n  END AS internal\nFROM\n  transactions\nWHERE\n  date BETWEEN $__timeFrom()\n  AND $__timeTo()\nORDER BY\n  date DESC;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -816,11 +950,10 @@
               }
             ],
             "limit": 50
-          },
-          "table": "transactions"
+          }
         }
       ],
-      "title": "Last Transactions",
+      "title": "Transactions",
       "type": "table"
     }
   ],
