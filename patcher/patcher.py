@@ -47,6 +47,30 @@ def update_internal():
 
     return redirect(f"{DASHBOARD_BASE_URL}?update_internal=successful", code=302)
 
+@app.route('/transactions/patch', methods=['GET'])
+def patch():
+    # Apply fields from the request to the transaction.
+    transaction_hash = request.args.get('hash')
+    if not transaction_hash:
+        return jsonify({"error": "Missing 'hash' parameter"}), 400
+
+    update_args = (
+        request.args.get('primary_class'),
+        request.args.get('secondary_class'),
+    )
+    update_query = """
+    UPDATE transactions SET
+        primary_class = %s,
+        secondary_class = %s
+    WHERE hash = %s
+    """
+
+    with psycopg2.connect(**POSTGRES_CONF) as connection, connection.cursor() as cursor:
+        cursor.execute(update_query, (*update_args, transaction_hash))
+        backup([update_query, (*update_args, transaction_hash)])
+
+    return redirect(f"{DASHBOARD_BASE_URL}?var-patch=successful", code=302)
+
 @app.route('/apply-patches', methods=['GET'])
 def apply_patches():
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -56,7 +80,7 @@ def apply_patches():
             q = json.loads(f.read())
         with psycopg2.connect(**POSTGRES_CONF) as connection, connection.cursor() as cursor:
             cursor.execute(*q)
-    return redirect(f"{DASHBOARD_BASE_URL}?apply_patches=success", code=302)
+    return redirect(f"{DASHBOARD_BASE_URL}?var-patch=successful", code=302)
 
 def backup(queryargs):
     base_dir = os.path.dirname(os.path.abspath(__file__))

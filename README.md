@@ -2,7 +2,7 @@
 
 Tool to analyze income and expenses, similar to apps like Finanzguru.
 
-![Screenshot](screenshot.png)
+![Screenshot](screenshots/main-dashboard.png)
 
 Has four parts:
 - Grafana dashboard that shows the data
@@ -51,9 +51,15 @@ docker-compose up --build
 
 ## Patching transactions
 
-Sometimes transactions may not be marked correctly as `internal` (transaction between own accounts). This happens when the transaction goes to an account that is yours but not imported.
+Sometimes transactions may not be classified correctly. For this case you can click the `Change classification` link in the dashboard. This will open a separate dashboard where you can insert your custom classification:
 
-For this case you can click the `Income (Set as Internal Transfer)` or `Expense (Set as Internal Transfer)` links in the Grafana dashboard. This will call the patcher service to update the transaction. This will then create a patch json file in `patcher/patches/`. If you've reset the database, you can reapply these manual changes in Grafana. You'll find a `Click here to apply patched transactions` link in the dashboard.
+![Screenshot](screenshots/patch-transaction.png)
+
+When clicking on the link in the dashboard, a local patcher service will be called that patches this transaction in the database and create a patch json file in `patcher/patches/`. In the dashboard you should see an alert noting that the transaction has been patched.
+
+![Screenshot](screenshots/patch-transaction-success.png)
+
+If you've reset the database, you can reapply these manual changes in Grafana. You'll find a `Click here to apply patched transactions` link in the dashboard. This will replay all patches in the `patcher/patches/` directory.
 
 ## License
 

@@ -22,29 +22,128 @@
   "links": [],
   "panels": [
     {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "P44368ADAD746BC27"
+      },
       "fieldConfig": {
-        "defaults": {},
-        "overrides": []
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto",
+              "wrapText": true
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "transparent",
+                "value": 0
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "val"
+            },
+            "properties": [
+              {
+                "id": "custom.hidden",
+                "value": true
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "val"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "applyToRow": true,
+                  "mode": "gradient",
+                  "type": "color-background",
+                  "wrapText": false
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 9,
+        "h": 7,
         "w": 12,
         "x": 0,
         "y": 0
       },
-      "id": 12,
+      "id": 14,
       "options": {
-        "code": {
-          "language": "plaintext",
-          "showLineNumbers": false,
-          "showMiniMap": false
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
         },
-        "content": "# Finance dashboard\n\nIf some of the transactions listed below are not classified correctly, you can click on the links in the table to change the classification.\nCurrently this is only supported for the `internal` field of the transaction.\nIf you redeploy the app and don't see your previous changes, you can replay the patches you made:\n\n[Click here to apply patched transactions](http://localhost:3001/apply-patches)",
-        "mode": "markdown"
+        "showHeader": false
       },
       "pluginVersion": "11.3.0",
-      "title": "",
-      "type": "text"
+      "targets": [
+        {
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  CASE\n    WHEN '$patch' = 'successful' THEN 'Transaction(s) updated successfully!'\n    ELSE 'If some of the transactions listed below are not classified correctly, you can click on the links in the table to change the classification. If you redeploy the app and dont see your previous changes, you can replay the patches you made:'\n  END AS msg,\n  CASE\n    WHEN '$patch' = 'successful' THEN 1\n    ELSE 0\n  END AS val\nFROM\n  transactions\nLIMIT 1;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Finance Dashboard",
+      "type": "table"
     },
     {
       "datasource": {
@@ -171,6 +270,31 @@
         }
       ],
       "type": "barchart"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 12,
+        "x": 0,
+        "y": 7
+      },
+      "id": 12,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "[Click here to apply patched transactions](http://localhost:3001/apply-patches)",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.3.0",
+      "title": "",
+      "type": "text"
     },
     {
       "datasource": {
@@ -894,14 +1018,31 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "purpose"
+              "options": "link"
             },
             "properties": [
               {
                 "id": "custom.width",
-                "value": 307
+                "value": 200
+              },
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "Patch this transaction",
+                    "url": "/d/deacro4ps53b4a/patch-transaction?var-hash=${__data.fields[\"hash\"]}&var-primary_class=${__data.fields[\"primary_class\"]}&var-secondary_class=${__data.fields[\"secondary_class\"]}"
+                  }
+                ]
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": ""
+            },
+            "properties": []
           }
         ]
       },
@@ -932,7 +1073,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n  hash,\n  date,\n  kind,\n  client,\n  purpose,\n  amount,\n  currency,\n  CASE\n    WHEN internal AND amount < 0 THEN 'Internal Transfer (Set as Expense)'\n    WHEN internal AND amount >= 0 THEN 'Internal Transfer (Set as Income)'\n    WHEN NOT internal AND amount < 0 THEN 'Expense (Set as Internal Transfer)'\n    WHEN NOT internal AND amount >= 0 THEN 'Income (Set as Internal Transfer)'\n  END AS internal\nFROM\n  transactions\nWHERE\n  date BETWEEN $__timeFrom()\n  AND $__timeTo()\nORDER BY\n  date DESC;",
+          "rawSql": "SELECT\n  hash,\n  date,\n  kind,\n  client,\n  purpose,\n  amount,\n  currency,\n  primary_class,\n  secondary_class,\n  'Change classification' AS link,\n  CASE\n    WHEN internal AND amount < 0 THEN 'Internal Transfer (Set as Expense)'\n    WHEN internal AND amount >= 0 THEN 'Internal Transfer (Set as Income)'\n    WHEN NOT internal AND amount < 0 THEN 'Expense (Set as Internal Transfer)'\n    WHEN NOT internal AND amount >= 0 THEN 'Income (Set as Internal Transfer)'\n  END AS internal\nFROM\n  transactions\nWHERE\n  date BETWEEN $__timeFrom()\n  AND $__timeTo()\nORDER BY\n  date DESC;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -999,6 +1140,23 @@
         ],
         "query": "YEAR, MONTH, DAY, QUARTER, WEEK",
         "type": "custom"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "hide": 2,
+        "name": "patch",
+        "options": [
+          {
+            "selected": true,
+            "text": "",
+            "value": ""
+          }
+        ],
+        "query": "",
+        "type": "textbox"
       }
     ]
   },
@@ -1010,6 +1168,6 @@
   "timezone": "browser",
   "title": "Finance Dashboard",
   "uid": "fe86cmoo161vkd",
-  "version": 2,
+  "version": 11,
   "weekStart": ""
 }
