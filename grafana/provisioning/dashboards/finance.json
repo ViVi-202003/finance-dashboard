@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 2,
   "links": [],
   "panels": [
     {
@@ -354,9 +354,9 @@
       "id": 1,
       "options": {
         "barRadius": 0.05,
-        "barWidth": 0.88,
+        "barWidth": 1,
         "fullHighlight": false,
-        "groupWidth": 0.97,
+        "groupWidth": 0.9,
         "legend": {
           "calcs": [],
           "displayMode": "list",
@@ -1168,6 +1168,6 @@
   "timezone": "browser",
   "title": "Finance Dashboard",
   "uid": "fe86cmoo161vkd",
-  "version": 11,
+  "version": 2,
   "weekStart": ""
 }
