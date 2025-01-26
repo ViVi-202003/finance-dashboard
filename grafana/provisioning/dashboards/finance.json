@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 2,
+  "id": 1,
   "links": [],
   "panels": [
     {
@@ -221,7 +221,7 @@
           "placement": "bottom",
           "showLegend": true
         },
-        "orientation": "auto",
+        "orientation": "vertical",
         "showValue": "auto",
         "stacking": "normal",
         "tooltip": {
@@ -237,7 +237,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "WITH RECURSIVE date_series AS (\n    SELECT DATE_TRUNC('${granularity}', $__timeFrom()::DATE) AS date\n    UNION ALL\n    SELECT DATE_TRUNC('${granularity}', (date + INTERVAL '1 ${granularity}')::DATE)\n    FROM date_series\n    WHERE date < DATE_TRUNC('${granularity}', $__timeTo()::DATE)\n),\nlast_balance AS (\n    SELECT\n        iban,\n        DATE_TRUNC('${granularity}', date) AS date,\n        balance,\n        ROW_NUMBER() OVER (PARTITION BY iban ORDER BY date DESC) AS rn\n    FROM transactions\n    WHERE internal = false\n),\ninterpolated_balances AS (\n    SELECT\n        ds.date,\n        t.iban,\n        COALESCE(\n            (SELECT balance FROM last_balance lb WHERE lb.iban = t.iban AND lb.date <= ds.date ORDER BY lb.date DESC LIMIT 1),\n            0\n        ) AS balance\n    FROM\n        date_series ds\n    CROSS JOIN\n        (SELECT DISTINCT iban FROM transactions WHERE internal = false) t\n)\nSELECT\n    date,\n    iban,\n    balance\nFROM\n    interpolated_balances\nWHERE\n    date BETWEEN $__timeFrom() AND $__timeTo()\nORDER BY\n    date, iban;",
+          "rawSql": "WITH RECURSIVE date_series AS (\n    SELECT DATE_TRUNC('${granularity}', $__timeFrom()::DATE) AS date\n    UNION ALL\n    SELECT DATE_TRUNC('${granularity}', (date + INTERVAL '1 ${granularity}')::DATE)\n    FROM date_series\n    WHERE date < DATE_TRUNC('${granularity}', $__timeTo()::DATE)\n),\nlast_balance AS (\n    SELECT\n        iban,\n        DATE_TRUNC('${granularity}', date) AS date,\n        balance,\n        ROW_NUMBER() OVER (PARTITION BY iban ORDER BY date DESC) AS rn\n    FROM transactions\n),\ninterpolated_balances AS (\n    SELECT\n        ds.date,\n        t.iban,\n        COALESCE(\n            (SELECT balance FROM last_balance lb WHERE lb.iban = t.iban AND lb.date <= ds.date ORDER BY lb.date DESC LIMIT 1),\n            0\n        ) AS balance\n    FROM\n        date_series ds\n    CROSS JOIN\n        (SELECT DISTINCT iban FROM transactions) t\n)\nSELECT\n    date,\n    iban,\n    balance\nFROM\n    interpolated_balances\nWHERE\n    date BETWEEN $__timeFrom() AND $__timeTo()\nORDER BY\n    date, iban;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1105,8 +1105,8 @@
     "list": [
       {
         "current": {
-          "text": "MONTH",
-          "value": "MONTH"
+          "text": "WEEK",
+          "value": "WEEK"
         },
         "description": "",
         "label": "Granularity",
@@ -1118,7 +1118,7 @@
             "value": "YEAR"
           },
           {
-            "selected": true,
+            "selected": false,
             "text": "MONTH",
             "value": "MONTH"
           },
@@ -1133,7 +1133,7 @@
             "value": "QUARTER"
           },
           {
-            "selected": false,
+            "selected": true,
             "text": "WEEK",
             "value": "WEEK"
           }
@@ -1161,7 +1161,7 @@
     ]
   },
   "time": {
-    "from": "now-1y",
+    "from": "now-2y",
     "to": "now"
   },
   "timepicker": {},
