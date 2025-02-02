@@ -33,5 +33,6 @@ def fetch_transactions():
             transactions = json.loads(f.read())
     for transaction in transactions:
         # Parse date as string -> format: 01.01.1970
+        
         transaction['date'] = datetime.datetime.strptime(transaction['date'], "%d.%m.%Y").date()
         yield transaction

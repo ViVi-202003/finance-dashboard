@@ -34,7 +34,7 @@ services:
     environment:
       POSTGRES_PASSWORD: secret
       # Plugin conf
-      IMPORTER_PLUGINS: ${IMPORTER_PLUGINS:-plugins.example_importer.importer,plugins.json_importer.importer}
+      IMPORTER_PLUGINS: ${IMPORTER_PLUGINS:-plugins.example_importer.importer}
       CLASSIFIER_PLUGIN: ${CLASSIFIER_PLUGIN:-plugins.example_classifier.classifier}
     restart: on-failure
 
