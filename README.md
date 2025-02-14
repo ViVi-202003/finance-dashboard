@@ -36,7 +36,7 @@ Now you need two things:
 - A banking data importer plugin: see the example importer in `plugins/example_importer`
 - A classifier plugin: see the example classifier in `plugins/example_classifier`
 
-For a real-world example, see the ING DE CSV importer in `plugins/ing_de_csv_importer`. This plugin uses the CSV data that can be exported on the ING banking dashboard. You can also provide transactions by hand through the JSON importer plugin in `plugins/json_importer`, or adapt this plugin to fit your needs.
+For a real-world example, see the ING DE PDF importer in `plugins/ing_pdf_de_importer`. This plugin uses depot and account statement PDFs downloaded from the ING banking dashboard. You can also provide transactions by hand through the JSON importer plugin in `plugins/json_importer`, or adapt this plugin to fit your needs.
 
 > [!TIP]
 > You can provide an `additional-requirements.txt` in the plugins directory to install additional dependencies that your plugin may need.
