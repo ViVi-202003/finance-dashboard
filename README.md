@@ -21,9 +21,6 @@ docker-compose up
 
 Then visit [http://localhost:3000](http://localhost:3000). You will find a Grafana dashboard with some example data.
 
-> [!TIP]
-> The default login is `admin`/`admin`. You can change the password in the Grafana settings.
-
 ## Loading in your own data
 
 Make sure to have a fresh database. It's easiest to remove the complete deployment and start over:
