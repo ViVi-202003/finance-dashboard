@@ -10,3 +10,5 @@
 !example_classifier/**
 !json_importer/
 !json_importer/**
+# Ignore venvs
+.venv/
