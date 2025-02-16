@@ -3,6 +3,8 @@ import os
 import hashlib
 import glob
 import json
+import signal
+import sys
 
 from flask import Flask, request, jsonify, redirect
 import psycopg2
@@ -91,5 +93,11 @@ def backup(queryargs):
     with open(os.path.join(input_dir, f"{hash}.json"), 'w') as f:
         f.write(json.dumps(queryargs))
 
+def handle_shutdown(signal, frame):
+    print("Shutting down gracefully...")
+    sys.exit(0)
+
 if __name__ == '__main__':
+    signal.signal(signal.SIGINT, handle_shutdown)
+    signal.signal(signal.SIGTERM, handle_shutdown)
     app.run(host='0.0.0.0', port=3001)
