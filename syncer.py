@@ -82,7 +82,18 @@ for importer in importers:
 df = pd.DataFrame(transactions)
 
 # Drop duplicate transactions to avoid normal transactions being marked as internal.
-df.drop_duplicates(subset=['date', 'amount', 'client', 'purpose'], inplace=True)
+# Note: We make the duplicate removal solely based on the date and amount. This is
+# because different importers may provide different encodings and metadata for the
+# same transaction. E.g. when importing from CSV and PDF at the same time.
+# The assumption here is that the same amount will only occur once on the same day.
+# If you want to modify the behavior, set the TRANSACTION_DEDUPLICATION_COLUMNS env
+# variable to a comma-separated list of columns to deduplicate on.
+cols = os.getenv("TRANSACTION_DEDUPLICATION_COLUMNS", "date,amount").split(',')
+df_wo_dupes = df.drop_duplicates(subset=cols, inplace=False)
+# Print out which transactions were removed.
+print(f"Removed {len(df) - len(df_wo_dupes)} duplicate transactions:")
+print(df[~df.index.isin(df_wo_dupes.index)])
+df = df_wo_dupes
 
 # Strip all whitespace from ibans (e.g. " DE 1234 ..." -> "DE1234...")
 strip = lambda x: x.replace(' ', '')
