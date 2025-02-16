@@ -66,9 +66,7 @@ def parse_kontoauszug_transactions(pdf_text):
         purpose = l2[11:]
         transactions.append({
             "date": date,
-            "kind": kind,
-            "client": client,
-            "purpose": purpose,
+            "description": f"{kind} {client} {purpose}",
             "amount": amount
         })
         # Jump one row since this row is already processed
@@ -103,7 +101,7 @@ def parse_kontoauszug_pdfs(pdfs):
         df['currency'] = 'EUR'
         # If we have "Wertpapiergutschrift" or "Wertpapierkauf" in the purpose,
         # it's an internal transaction to/from the ING depot account.
-        df['internal'] = df['kind'].str.contains("Wertpapiergutschrift|Wertpapierkauf")
+        df['internal'] = df['description'].str.contains("Wertpapiergutschrift|Wertpapierkauf")
         dfs.append(df)
     return pd.concat(dfs)
 
@@ -179,8 +177,7 @@ def parse_depot_pdfs(pdfs):
             # Handle the share as a separate account with the share name.
             "iban": share_name, # TODO: Refactor that the field is not called iban
             "date": date,
-            "kind": kind,
-            "purpose": f"{kind} {n_shares} {share_name}",
+            "description": f"Depot {kind} {n_shares} {share_name}",
             "amount": amount,
             "n_shares": n_shares,
             "pershare": pershare
@@ -203,7 +200,6 @@ def parse_depot_pdfs(pdfs):
     df['date'] = df['date'].dt.strftime('%Y-%m-%d')
     df['currency'] = 'EUR'
     df['internal'] = True
-    df['client'] = 'Depot'
     return df
 
 def fetch_transactions():

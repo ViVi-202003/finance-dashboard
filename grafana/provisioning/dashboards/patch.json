@@ -42,7 +42,7 @@
         "content": "## [Update transaction with inputs](http://localhost:3001/transactions/patch?hash=${hash}&primary_class=${primary_class}&secondary_class=${secondary_class})",
         "mode": "markdown"
       },
-      "pluginVersion": "11.3.0",
+      "pluginVersion": "11.5.1",
       "title": "",
       "type": "text"
     },
@@ -99,7 +99,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "11.3.0",
+      "pluginVersion": "11.5.1",
       "targets": [
         {
           "datasource": {
@@ -141,19 +141,19 @@
     "list": [
       {
         "current": {
-          "text": "77bccc48d4ab1b507f33a98e840f971d0e30ef8571aebfb415b9e259012208eb",
-          "value": "77bccc48d4ab1b507f33a98e840f971d0e30ef8571aebfb415b9e259012208eb"
+          "text": "f44b21158006c479b8bb04b252dc11bc17b01a7eeefc9fd12af50f56e6df515f",
+          "value": "f44b21158006c479b8bb04b252dc11bc17b01a7eeefc9fd12af50f56e6df515f"
         },
         "description": "Hash of the transaction",
         "name": "hash",
         "options": [
           {
             "selected": true,
-            "text": "77bccc48d4ab1b507f33a98e840f971d0e30ef8571aebfb415b9e259012208eb",
-            "value": "77bccc48d4ab1b507f33a98e840f971d0e30ef8571aebfb415b9e259012208eb"
+            "text": "f44b21158006c479b8bb04b252dc11bc17b01a7eeefc9fd12af50f56e6df515f",
+            "value": "f44b21158006c479b8bb04b252dc11bc17b01a7eeefc9fd12af50f56e6df515f"
           }
         ],
-        "query": "77bccc48d4ab1b507f33a98e840f971d0e30ef8571aebfb415b9e259012208eb",
+        "query": "f44b21158006c479b8bb04b252dc11bc17b01a7eeefc9fd12af50f56e6df515f",
         "type": "textbox"
       },
       {
@@ -161,23 +161,7 @@
           "text": "Custom",
           "value": "Custom"
         },
-        "name": "primary_class",
-        "options": [
-          {
-            "selected": true,
-            "text": "Custom",
-            "value": "Custom"
-          }
-        ],
-        "query": "Custom",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "Custom",
-          "value": "Custom"
-        },
-        "name": "secondary_class",
+        "name": "classification",
         "options": [
           {
             "selected": true,

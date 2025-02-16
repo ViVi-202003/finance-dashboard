@@ -62,16 +62,13 @@ with psycopg2.connect(**POSTGRES_CONF) as connection, connection.cursor() as cur
         iban TEXT NOT NULL,
         internal BOOLEAN DEFAULT FALSE,
         date DATE NOT NULL,
-        client TEXT NOT NULL,
-        kind TEXT NOT NULL,
-        purpose TEXT NOT NULL,
+        description TEXT NOT NULL,
         amount DECIMAL NOT NULL,
         balance DECIMAL NOT NULL,
         currency TEXT NOT NULL,
-        primary_class TEXT,
-        secondary_class TEXT,
+        classification TEXT,
         hash VARCHAR(255) NOT NULL,
-        PRIMARY KEY (iban, date, client, kind, purpose, amount, balance, currency)
+        PRIMARY KEY (iban, date, description, amount, balance, currency)
     )""")
 
 # Fetch transactions from all importers.
@@ -107,16 +104,14 @@ df['amount_abs'] = df['amount'].abs()
 df['internal'] = df.duplicated(subset=['date', 'amount_abs'], keep=False) | df['internal'].fillna(False)
 
 # Classify transactions
-df['primary_class'], df['secondary_class'] = zip(*df.apply(classifier.classify_transaction, axis=1))
+df['classification'] = df.apply(classifier.classify_transaction, axis=1)
 
 # Calculate a hash for each transaction to create links in Grafana.
 def sha256(t):
     h = hashlib.sha256()
     h.update(t['iban'].encode())
     h.update(str(t['date']).encode())
-    h.update(t['client'].encode())
-    h.update(t['kind'].encode())
-    h.update(t['purpose'].encode())
+    h.update(t['description'].encode())
     h.update(str(t['amount']).encode())
     h.update(str(t['balance']).encode())
     h.update(t['currency'].encode())
@@ -127,22 +122,19 @@ df['hash'] = df.apply(sha256, axis=1)
 with psycopg2.connect(**POSTGRES_CONF) as connection, connection.cursor() as cursor:
     for i, transaction in df.iterrows():
         cursor.execute("""
-            INSERT INTO transactions (iban, internal, date, client, kind, purpose, amount, balance, currency, primary_class, secondary_class, hash)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            ON CONFLICT (iban, date, client, kind, purpose, amount, balance, currency)
+            INSERT INTO transactions (iban, internal, date, description, amount, balance, currency, classification, hash)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ON CONFLICT (iban, date, description, amount, balance, currency)
             DO NOTHING
         """, (
             transaction['iban'],
             transaction['internal'], # Whether the transaction is between our own accounts
             transaction['date'],
-            transaction['client'],
-            transaction['kind'],
-            transaction['purpose'],
+            transaction['description'],
             transaction['amount'],
             transaction['balance'],
             transaction['currency'],
-            transaction['primary_class'],
-            transaction['secondary_class'],
+            transaction['classification'],
             transaction['hash'],
         ))
 

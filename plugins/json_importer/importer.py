@@ -9,9 +9,7 @@ will read all json files in the input directory and return the transactions:
         "iban": "DE00000000000000000000",
         "date": "01.01.2025",
         "internal": false,
-        "client": "Company XYZ",
-        "kind": "Credit",
-        "purpose": "Salary",
+        "description": "Credit Company XYZ Salary",
         "amount": 1000,
         "balance": 10000,
         "currency": "EUR"

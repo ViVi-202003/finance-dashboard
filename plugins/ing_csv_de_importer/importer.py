@@ -49,8 +49,6 @@ def fetch_transactions():
         print(f"Reading file {file}")
         df = pd.read_csv(file, sep=';', encoding='latin1', skiprows=12)
         df['iban'] = parse_header(file) # Only need IBAN for deduplication
-        # Fill NaNs in Auftraggeber/Empfaenger with "Unbekannt"
-        df['client'] = df['Auftraggeber/Empfänger'].fillna('Unknown').astype(str)
         # Parse betrag as float -> format: 1.234,56 or -1.234,56
         df['amount'] = df['Betrag'].str.replace('.', '').str.replace(',', '.').astype(float)
         df['balance'] = df['Saldo'].str.replace('.', '').str.replace(',', '.').astype(float)
@@ -58,8 +56,11 @@ def fetch_transactions():
         df['date'] = pd.to_datetime(df['Buchung'], format='%d.%m.%Y')
         # Convert back to string for database insertion
         df['date'] = df['date'].dt.strftime('%Y-%m-%d')
+        # Fill NaNs in Auftraggeber/Empfaenger with "Unbekannt"
+        df['client'] = df['Auftraggeber/Empfänger'].fillna('Unknown').astype(str)
         df['kind'] = df['Buchungstext'].astype(str) # e.g. "Lastschrift", "Gutschrift"
         df['purpose'] = df['Verwendungszweck'].astype(str)
+        df['description'] = df.apply(lambda x: f"{x['kind']} {x['client']} {x['purpose']}", axis=1)
         df['currency'] = df['Währung.1'].astype(str)
         # If we have "Wertpapiergutschrift" or "Wertpapierkauf" in the purpose,
         # it's an internal transaction to/from the ING depot account.
